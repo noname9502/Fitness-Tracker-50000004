@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from flask_mysqldb import MySQL
 import bcrypt
+
 app = Flask(__name__)
 
 # MySQL Configuration
@@ -19,9 +20,31 @@ app.config['REMEMBER_COOKIE_SECURE'] = True    # Secure remember me cookies
 mysql = MySQL(app)
 
 
+@app.after_request
+def apply_security_headers(response):
+    # Prevents browsers from MIME-sniffing a response away from the declared content type.
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    
+    # Protects against clickjacking by disallowing the page to be displayed in a frame or iframe.
+    response.headers["X-Frame-Options"] = "DENY"
+    
+    # Controls the amount of referrer information that is passed when navigating away from the site.
+    response.headers["Referrer-Policy"] = "no-referrer"
+    
+    # Sets a Content Security Policy to restrict resource loading to the same origin.
+    response.headers["X-Content-Security-Policy"] = "default-src 'self'"
+    
+    # XSS protection
+    response.headers["X-XSS-Protection"] = "1; mode=block"  
+    
+    # HSTS tell browsers to always connect to your site using HTTPS, which prevents downgrade attacks.
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+
+    return response
+
 @app.route('/')
 def home():
-    return render_template('login_signup.html')
+    return render_template('main.html')
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -39,7 +62,12 @@ def signup():
         flash('Email already exists or an error occurred!', 'danger')
     finally:
         cur.close()
-    return redirect(url_for('home'))
+    return redirect(url_for('login_page'))
+
+@app.route('/login')
+def login_page():
+    return render_template('login_signup.html')
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -64,10 +92,10 @@ def login():
             return redirect(url_for('index'))  # Redirect to user dashboard
         else:
             flash('Invalid email or password!', 'danger')
-            return redirect(url_for('home'))
+            return redirect(url_for('login_page'))
     else:
         flash('Invalid email or password!', 'danger')
-        return redirect(url_for('home'))
+        return redirect(url_for('login_page'))
         
 @app.route('/index')
 def index():
