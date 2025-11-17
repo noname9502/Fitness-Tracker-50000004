@@ -1,93 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login and Sign Up</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .container {
-            margin-top: 100px;
-            max-width: 400px;
-        }
-        .card {
-            padding: 20px;
-        }
-        .form-link {
-            display: flex;
-            justify-content: center;
-            margin-top: 15px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login and Sign Up</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='login_style.css') }}">
 </head>
 <body>
 
 <div class="container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="alert alert-dismissible fade show" role="alert">
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-container mt-3">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show flash-message" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
 
-    <div class="card">
-        <h5 class="card-title text-center">Login</h5>
-        <form id="login-form" method="POST" action="/login">
-            <div class="form-group">
-                <label for="login-email">Email address</label>
-                <input type="email" class="form-control" id="login-email" name="login-email" required>
-            </div>
-            <div class="form-group">
-                <label for="login-password">Password</label>
-                <input type="password" class="form-control" id="login-password" name="login-password" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Login</button>
-            <div class="form-link">
-                <a href="#" id="switch-to-signup">Don't have an account? Sign up</a>
-            </div>
-        </form>
-    </div>
+  <div class="card">
+    <h5 class="card-title text-center">Login</h5>
+    <form id="login-form" method="POST" action="/login">
+      <div class="form-group">
+        <label for="login-email">Email address</label>
+        <input type="email" class="form-control" id="login-email" name="login-email" required>
+      </div>
+      <div class="form-group">
+        <label for="login-password">Password</label>
+        <input type="password" class="form-control" id="login-password" name="login-password" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Login</button>
+      <div class="form-link">
+        <a href="#" id="switch-to-signup">Don't have an account? Sign up</a>
+      </div>
+    </form>
+  </div>
 
-    <div class="card" style="display: none;" id="signup-card">
-        <h5 class="card-title text-center">Sign Up</h5>
-        <form id="signup-form" method="POST" action="/signup">
-            <div class="form-group">
-                <label for="signup-email">Email address</label>
-                <input type="email" class="form-control" id="signup-email" name="signup-email" required>
-            </div>
-            <div class="form-group">
-                <label for="signup-password">Password</label>
-                <input type="password" class="form-control" id="signup-password" name="signup-password" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
-            <div class="form-link">
-                <a href="#" id="switch-to-login">Already have an account? Login</a>
-            </div>
-        </form>
-    </div>
+  <div class="card" style="display: none;" id="signup-card">
+    <h5 class="card-title text-center">Sign Up</h5>
+    <form id="signup-form" method="POST" action="/signup">
+      <div class="form-group">
+        <label for="signup-email">Email address</label>
+        <input type="email" class="form-control" id="signup-email" name="signup-email" required>
+      </div>
+      <div class="form-group">
+        <label for="signup-password">Password</label>
+        <input type="password" class="form-control" id="signup-password" name="signup-password" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+      <div class="form-link">
+        <a href="#" id="switch-to-login">Already have an account? Login</a>
+      </div>
+    </form>
+  </div>
 </div>
 
-<script>
-    document.getElementById('switch-to-signup').addEventListener('click', function(e) {
-        e.preventDefault();
-        document.getElementById('login-form').parentElement.style.display = 'none';
-        document.getElementById('signup-card').style.display = 'block';
-    });
-    
-    document.getElementById('switch-to-login').addEventListener('click', function(e) {
-        e.preventDefault();
-        document.getElementById('signup-card').style.display = 'none';
-        document.getElementById('login-form').parentElement.style.display = 'block';
-    });
-</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='login_script.js') }}"></script>
 
 </body>
 </html>
