@@ -3,656 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="filename" content="fitness-tracker.html">
-    <title>FitTrack Pro | Advanced Fitness Tracking</title>
+    <meta name="filename" content="main.html">
+    <title>Fitness Tracker | Advanced Fitness Tracking</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #4361ee;
-            --secondary: #3a0ca3;
-            --accent: #4cc9f0;
-            --success: #2ec4b6;
-            --warning: #ff9e00;
-            --dark: #1a1a2e;
-            --light: #f8f9fa;
-            --gray: #8d99ae;
-            --transition: all 0.3s ease;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            --radius: 16px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            color: var(--dark);
-            line-height: 1.6;
-            background-color: white;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
-        }
-
-        h1, h2, h3, h4 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-        }
-
-        .container {
-            max-width: 1440px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        /* Header & Navigation */
-        header {
-            background-color: rgba(255, 255, 255, 0.98);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.07);
-            backdrop-filter: blur(10px);
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 0;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            font-weight: 700;
-            font-size: 1.8rem;
-            color: var(--primary);
-        }
-
-        .logo-icon {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            margin-right: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo-icon i {
-            color: white;
-            font-size: 1.4rem;
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-            align-items: center;
-        }
-
-        .nav-links li {
-            margin-left: 2rem;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--dark);
-            font-weight: 500;
-            transition: var(--transition);
-            position: relative;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary);
-        }
-
-        .nav-links a::after {
-            content: "";
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 3px;
-            background: var(--primary);
-            border-radius: 10px;
-            transition: var(--transition);
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-        
-        .login-link {
-            font-weight: 600;
-            color: var(--primary) !important;
-            display: flex;
-            align-items: center;
-        }
-
-        .login-link i {
-            margin-right: 0.5rem;
-        }
-
-        .nav-buttons .btn {
-            margin-left: 1rem;
-        }
-
-        /* Button Styling */
-        .btn {
-            display: inline-block;
-            padding: 0.9rem 2.2rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition);
-            cursor: pointer;
-            border: none;
-            font-size: 1rem;
-            font-family: 'Poppins', sans-serif;
-            text-align: center;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            box-shadow: 0 4px 20px rgba(67, 97, 238, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-        }
-
-        .btn-outline:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-dark {
-            background: var(--dark);
-            color: white;
-        }
-
-        .btn-dark:hover {
-            background: var(--secondary);
-            transform: translateY(-3px);
-        }
-
-        .btn-accent {
-            background: var(--accent);
-            color: white;
-        }
-
-        .btn-accent:hover {
-            background: linear-gradient(135deg, var(--accent), #2ec4b6);
-            transform: translateY(-3px);
-        }
-
-        /* Hero Section */
-        .hero {
-            padding: 180px 0 100px;
-            background: linear-gradient(135deg, #f0f5ff 0%, #e6f7ff 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 45%;
-            height: 100%;
-            background: url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
-            border-radius: var(--radius) 0 0 var(--radius);
-            box-shadow: inset 0 0 0 2000px rgba(67, 97, 238, 0.1);
-        }
-
-        .hero-content {
-            max-width: 600px;
-            position: relative;
-            z-index: 10;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1.5rem;
-            line-height: 1.2;
-            color: var(--dark);
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            margin-bottom: 2.5rem;
-            color: var(--gray);
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stats {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .stat-item {
-            display: flex;
-            align-items: center;
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-right: 0.8rem;
-        }
-
-        .stat-text {
-            font-size: 1rem;
-            color: var(--dark);
-            max-width: 120px;
-        }
-
-        /* Features Section */
-        .features {
-            padding: 100px 0;
-            background-color: white;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .section-title h2 {
-            font-size: 2.8rem;
-            color: var(--dark);
-            margin-bottom: 1rem;
-        }
-
-        .section-title p {
-            color: var(--gray);
-            font-size: 1.2rem;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2.5rem;
-        }
-
-        .feature-card {
-            background: white;
-            border-radius: var(--radius);
-            overflow: hidden;
-            transition: var(--transition);
-            box-shadow: var(--shadow);
-            padding: 2.5rem;
-            text-align: center;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .feature-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-        }
-
-        .feature-icon i {
-            color: white;
-            font-size: 2.2rem;
-        }
-
-        .feature-card h3 {
-            font-size: 1.6rem;
-            margin-bottom: 1rem;
-            color: var(--dark);
-        }
-
-        .feature-card p {
-            color: var(--gray);
-            margin-bottom: 1.5rem;
-        }
-
-        /* Activity Logging Section */
-        .activity-logging {
-            padding: 100px 0;
-            background: linear-gradient(135deg, #f8f9ff 0%, #f0f7ff 100%);
-        }
-
-        .activity-container {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 4rem;
-        }
-
-        .activity-content {
-            flex: 1;
-            min-width: 300px;
-        }
-
-        .activity-content h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--dark);
-        }
-
-        .activity-content p {
-            color: var(--gray);
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-        }
-
-        .activity-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .activity-item {
-            display: flex;
-            align-items: center;
-            background: white;
-            padding: 1rem 1.8rem;
-            border-radius: 50px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        .activity-item i {
-            font-size: 1.5rem;
-            color: var(--primary);
-            margin-right: 1rem;
-        }
-
-        .activity-img {
-            flex: 1;
-            min-width: 300px;
-            position: relative;
-            height: 500px;
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-        }
-
-        .activity-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* Data Visualization Section */
-        .data-viz {
-            padding: 100px 0;
-            background-color: white;
-        }
-
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 2.5rem;
-        }
-
-        .chart-card {
-            background: white;
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            padding: 2rem;
-            height: 400px;
-        }
-
-        .chart-card h3 {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            font-size: 1.4rem;
-            color: var(--dark);
-        }
-
-        /* Security Section */
-        .security-section {
-            padding: 100px 0;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .security-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4rem;
-            align-items: center;
-        }
-
-        .security-content {
-            flex: 1;
-            min-width: 300px;
-        }
-
-        .security-content h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .security-content p {
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-
-        .security-features {
-            margin-top: 2rem;
-        }
-
-        .security-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 1.5rem;
-        }
-
-        .security-icon {
-            font-size: 1.8rem;
-            margin-right: 1rem;
-            color: var(--accent);
-        }
-
-        .security-text h4 {
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .security-text p {
-            opacity: 0.85;
-            margin-bottom: 0;
-        }
-
-        .security-image {
-            flex: 1;
-            min-width: 300px;
-            position: relative;
-            height: 400px;
-            background: url('https://images.unsplash.com/photo-1633287387306-f08b4b3671c6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80') center/cover no-repeat;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-        }
-
-        /* Footer */
-        footer {
-            background: var(--dark);
-            color: white;
-            padding: 4rem 0 2rem;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2.5rem;
-            margin-bottom: 3rem;
-        }
-
-        .footer-col h4 {
-            font-size: 1.4rem;
-            margin-bottom: 1.5rem;
-            position: relative;
-            padding-bottom: 1rem;
-        }
-
-        .footer-col h4::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 50px;
-            height: 3px;
-            background: var(--accent);
-            border-radius: 10px;
-        }
-
-        .footer-links {
-            list-style: none;
-        }
-
-        .footer-links li {
-            margin-bottom: 0.8rem;
-        }
-
-        .footer-links a {
-            color: var(--gray);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .footer-links a:hover {
-            color: var(--accent);
-            padding-left: 5px;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .social-links a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            transition: var(--transition);
-        }
-
-        .social-links a:hover {
-            background: var(--primary);
-            transform: translateY(-3px);
-        }
-
-        .copyright {
-            text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--gray);
-            font-size: 0.95rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .hero::before {
-                width: 40%;
-            }
-        }
-
-        @media (max-width: 992px) {
-            .hero::before {
-                display: none;
-            }
-            
-            .hero-content {
-                text-align: center;
-                margin: 0 auto;
-            }
-            
-            .hero-buttons {
-                justify-content: center;
-            }
-            
-            .stats {
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-            
-            .hero h1 {
-                font-size: 2.8rem;
-            }
-            
-            .hero-buttons {
-                flex-direction: column;
-            }
-            
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero {
-                padding: 140px 0 60px;
-            }
-            
-            .hero h1 {
-                font-size: 2.4rem;
-            }
-            
-            .section-title h2 {
-                font-size: 2.2rem;
-            }
-
-            .feature-card {
-                padding: 1.8rem;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main_style.css') }}">
 </head>
 <body>
     <!-- Header with Navigation -->
@@ -663,18 +19,19 @@
                     <div class="logo-icon">
                         <i class="fas fa-heartbeat"></i>
                     </div>
-                    FitTrack Pro
+                    Fitness Tracker
                 </div>
                 <ul class="nav-links">
                     <li><a href="#features">Features</a></li>
                     <li><a href="#activity">Activity</a></li>
                     <li><a href="#analytics">Analytics</a></li>
                     <li><a href="#security">Security</a></li>
-                    <li><a href="#" class="login-link"><i class="fas fa-sign-in-alt"></i> Log In</a></li>
                 </ul>
                 <div class="nav-buttons">
-                    <a href="#" class="btn btn-primary">Get Started</a>
+                    <a href="{{ url_for('login_page') }}" class="btn btn-primary">Login</a>
+                    <a href="{{ url_for('login_page') }}" class="btn btn-primary">Sign up</a>
                 </div>
+
             </nav>
         </div>
     </header>
@@ -752,7 +109,7 @@
             <div class="activity-container">
                 <div class="activity-content">
                     <h2>Comprehensive Activity Tracking</h2>
-                    <p>Log any workout with ease. Whether you're a runner, cyclist, swimmer, or gym enthusiast, FitTrack Pro has you covered with specialized tracking modules.</p>
+                    <p>Log any workout with ease. Whether you're a runner, cyclist, swimmer, or gym enthusiast, Fitness Tracker has you covered with specialized tracking modules.</p>
                     
                     <div class="activity-list">
                         <div class="activity-item">
@@ -818,6 +175,16 @@
                     <h3>Performance Comparison</h3>
                     <div id="radar-chart" style="width:100%; height:100%;"></div>
                 </div>
+
+    <div class="chart-card">
+        <h3>Heart Rate Trends</h3>
+        <div id="area-chart"></div>
+    </div>
+
+    <div class="chart-card">
+        <h3>Workout Category Breakdown</h3>
+        <div id="donut-chart"></div>
+    </div>
             </div>
         </div>
     </section>
@@ -836,8 +203,8 @@
                                 <i class="fas fa-lock"></i>
                             </div>
                             <div class="security-text">
-                                <h4>End-to-end Encryption</h4>
-                                <p>All your fitness data is encrypted both in transit and at rest</p>
+                                <h4>HTTPS Connection</h4>
+                                <p>The entire website operates under HTTPS, ensuring that all communication between your browser and our servers is encrypted and protected from interception.</p>
                             </div>
                         </div>
                         
@@ -846,8 +213,8 @@
                                 <i class="fas fa-user-shield"></i>
                             </div>
                             <div class="security-text">
-                                <h4>Two-Factor Authentication</h4>
-                                <p>Extra layer of security for your account</p>
+                                <h4>Session and Browser Protection</h4>
+                                <p>We use advanced session management, X-Frame-Options, and X-XSS-Protection headers to prevent session hijacking, clickjacking, and cross-site scripting attacks.</p>
                             </div>
                         </div>
                         
@@ -862,7 +229,7 @@
                         </div>
                     </div>
                     
-                    <a href="#" class="btn btn-accent" style="margin-top: 2rem;">Access Your Dashboard</a>
+                    <a href="{{ url_for('login_page') }}" class="btn btn-accent" style="margin-top: 2rem;">Access Your Dashboard</a>
                 </div>
                 
                 <div class="security-image"></div>
@@ -875,7 +242,7 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-col">
-                    <h4>FitTrack Pro</h4>
+                    <h4>Fitness Tracker</h4>
                     <p>Your complete fitness tracking solution with advanced analytics and secure data management.</p>
                     <div class="social-links">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -920,218 +287,11 @@
             </div>
             
             <div class="copyright">
-                &copy; 2023 FitTrack Pro. All rights reserved.
+                &copy; 2023 Fitness Tracker. All rights reserved.
             </div>
         </div>
     </footer>
 
-    <script>
-        // Initialize ECharts
-        document.addEventListener('DOMContentLoaded', function() {
-            // Pie Chart
-            const pieChart = echarts.init(document.getElementById('pie-chart'));
-            pieChart.setOption({
-                tooltip: {
-                    trigger: 'item'
-                },
-                legend: {
-                    orient: 'horizontal',
-                    bottom: 10,
-                    textStyle: {
-                        color: '#8d99ae'
-                    }
-                },
-                series: [{
-                    name: 'Activities',
-                    type: 'pie',
-                    radius: '70%',
-                    data: [
-                        { value: 35, name: 'Running' },
-                        { value: 25, name: 'Cycling' },
-                        { value: 20, name: 'Weightlifting' },
-                        { value: 10, name: 'Swimming' },
-                        { value: 10, name: 'Hiking' }
-                    ],
-                    emphasis: {
-                        itemStyle: {
-                            shadowBlur: 10,
-                            shadowOffsetX: 0,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)'
-                        }
-                    },
-                    itemStyle: {
-                        borderRadius: 10,
-                        borderColor: '#fff',
-                        borderWidth: 2
-                    }
-                }]
-            });
-            
-            // Line Chart
-            const lineChart = echarts.init(document.getElementById('line-chart'));
-            lineChart.setOption({
-                tooltip: {
-                    trigger: 'axis'
-                },
-                legend: {
-                    data: ['Steps', 'Calories Burned', 'Active Minutes'],
-                    textStyle: {
-                        color: '#8d99ae'
-                    }
-                },
-                grid: {
-                    left: '3%',
-                    right: '4%',
-                    bottom: '3%',
-                    containLabel: true
-                },
-                xAxis: {
-                    type: 'category',
-                    boundaryGap: false,
-                    data: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                    axisLine: {
-                        lineStyle: {
-                            color: '#8d99ae'
-                        }
-                    }
-                },
-                yAxis: {
-                    type: 'value',
-                    axisLine: {
-                        lineStyle: {
-                            color: '#8d99ae'
-                        }
-                    }
-                },
-                series: [
-                    {
-                        name: 'Steps',
-                        type: 'line',
-                        smooth: true,
-                        data: [58000, 62000, 70000, 75000],
-                        lineStyle: {
-                            width: 4,
-                            color: '#4361ee'
-                        }
-                    },
-                    {
-                        name: 'Calories Burned',
-                        type: 'line',
-                        smooth: true,
-                        data: [12500, 13600, 15800, 17200],
-                        lineStyle: {
-                            width: 4,
-                            color: '#4cc9f0'
-                        }
-                    },
-                    {
-                        name: 'Active Minutes',
-                        type: 'line',
-                        smooth: true,
-                        data: [1250, 1420, 1650, 1820],
-                        lineStyle: {
-                            width: 4,
-                            color: '#2ec4b6'
-                        }
-                    }
-                ]
-            });
-            
-            // Bar Chart
-            const barChart = echarts.init(document.getElementById('bar-chart'));
-            barChart.setOption({
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: {
-                        type: 'shadow'
-                    }
-                },
-                grid: {
-                    left: '3%',
-                    right: '4%',
-                    bottom: '3%',
-                    containLabel: true
-                },
-                xAxis: {
-                    type: 'category',
-                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    axisLine: {
-                        lineStyle: {
-                            color: '#8d99ae'
-                        }
-                    }
-                },
-                yAxis: {
-                    type: 'value',
-                    name: 'Calories',
-                    axisLine: {
-                        lineStyle: {
-                            color: '#8d99ae'
-                        }
-                    }
-                },
-                series: [
-                    {
-                        name: 'Calories Burned',
-                        type: 'bar',
-                        itemStyle: {
-                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                                { offset: 0, color: '#4361ee' },
-                                { offset: 1, color: '#4cc9f0' }
-                            ])
-                        },
-                        data: [3200, 2800, 3500, 4200, 3000, 5100, 3800],
-                        barWidth: '40%'
-                    }
-                ]
-            });
-            
-            // Radar Chart
-            const radarChart = echarts.init(document.getElementById('radar-chart'));
-            radarChart.setOption({
-                tooltip: {},
-                radar: {
-                    indicator: [
-                        { name: 'Running', max: 100 },
-                        { name: 'Cycling', max: 100 },
-                        { name: 'Swimming', max: 100 },
-                        { name: 'Weightlifting', max: 100 },
-                        { name: 'Yoga', max: 100 },
-                        { name: 'HIIT', max: 100 }
-                    ]
-                },
-                series: [{
-                    name: 'Workout Time (min)',
-                    type: 'radar',
-                    data: [
-                        {
-                            value: [85, 70, 30, 60, 45, 75],
-                            name: 'This Week',
-                            lineStyle: {
-                                width: 3,
-                                color: '#4361ee'
-                            }
-                        },
-                        {
-                            value: [70, 65, 25, 55, 40, 65],
-                            name: 'Last Week',
-                            lineStyle: {
-                                width: 3,
-                                color: '#4cc9f0'
-                            }
-                        }
-                    ]
-                }]
-            });
-            
-            // Handle window resize
-            window.addEventListener('resize', function() {
-                pieChart.resize();
-                lineChart.resize();
-                barChart.resize();
-                radarChart.resize();
-            });
-        });
-    </script>
+<script src="{{ url_for('static', filename='main_script.js') }}"></script>
 </body>
 </html>
