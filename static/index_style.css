@@ -1,0 +1,219 @@
+/* 
+   BODY & BACKGROUND
+*/
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: linear-gradient(
+    270deg,
+    #ff9a9e,  /* Pink */
+    #fad0c4,  /* Peach */
+    #a1c4fd,  /* Light Blue */
+    #c2e9fb,  /* Sky Blue */
+    #d4fc79,  /* Light Green */
+    #96e6a1,  /* Mint Green */
+    #fbc2eb,  /* Lavender */
+    #ffb347   /* Orange */
+  );
+  background-size: 1600% 1600%; /* Larger for more movement */
+  animation: vibrantShift 30s linear infinite; /* Faster & linear for noticeable change */
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+}
+
+@keyframes vibrantShift {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 50% 50%; }
+  50% { background-position: 100% 50%; }
+  75% { background-position: 50% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+
+/* 
+   CONTAINER
+*/
+.container {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  backdrop-filter: blur(10px);
+  margin-top: 40px;
+}
+
+/* 
+   HEADINGS
+ */
+h1 {
+  font-weight: 700;
+  color: #1565c0;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+h2 {
+  margin-top: 50px;
+  color: #0d47a1;
+  border-left: 5px solid #2196f3;
+  padding-left: 10px;
+}
+
+h4 {
+  color: #333;
+}
+
+/* 
+   FORM & INPUTS
+ */
+label {
+  font-weight: 600;
+}
+
+.form-control {
+  border-radius: 12px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+#filterInput {
+  border-radius: 30px;
+}
+
+/* 
+   BUTTONS
+*/
+
+/* General modern gradient button */
+.btn-gradient {
+  background: linear-gradient(90deg, #36d1dc, #5b86e5);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 10px 25px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-gradient:hover {
+  background: linear-gradient(90deg, #5b86e5, #36d1dc);
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+.btn-gradient i {
+  margin-right: 8px;
+}
+
+/* Logout button */
+.logout-btn {
+  background: linear-gradient(90deg, #ff416c, #ff4b2b);
+  border: none;
+  color: #fff;
+  padding: 10px 25px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255,75,43,0.4);
+}
+
+.logout-btn:hover {
+  background: linear-gradient(90deg, #ff4b2b, #ff416c);
+  transform: scale(1.05);
+  box-shadow: 0 6px 25px rgba(255,75,43,0.5);
+}
+
+.logout-btn i {
+  margin-right: 8px;
+}
+
+/* Download log button */
+.btn-gradient.download-btn {
+  background: linear-gradient(90deg, #ff7e5f, #feb47b);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 30px;
+  font-weight: 600;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.btn-gradient.download-btn i {
+  margin-right: 8px;
+}
+
+.btn-gradient.download-btn:hover {
+  background: linear-gradient(90deg, #feb47b, #ff7e5f);
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+/* Primary submit button */
+.btn-primary {
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border: none;
+  transition: all 0.3s ease;
+}
+.btn-primary:hover {
+  background: linear-gradient(90deg, #764ba2, #667eea);
+  transform: scale(1.05);
+}
+
+/* 
+   CHART CONTAINERS
+*/
+.chart-container {
+  background: #f9f9f9;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.05);
+  height: 300px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 
+   LISTS
+*/
+ul.list-group {
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.list-group-item {
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+/* 
+   FOOTER
+ */
+footer {
+  text-align: center;
+  color: #555;
+  font-size: 0.9em;
+  margin-top: 40px;
+}
+
+/* RESPONSIVE CONTAINER*/
+@media (max-width: 768px) {
+    .container { max-width: 90%; }
+}
+
+@media (min-width: 769px) {
+    .container { max-width: 70%; }
+}
+
+@media (min-width: 1440px) {
+    .container { max-width: 70%; }
+}
+
