@@ -46,6 +46,7 @@
   <div class="card" style="display: none;" id="signup-card">
     <h5 class="card-title text-center">Sign Up</h5>
     <form id="signup-form" method="POST" action="/signup">
+
       <div class="form-group">
         <label for="signup-email">Email address</label>
         <input type="email" class="form-control" id="signup-email" name="signup-email" required>
@@ -54,6 +55,15 @@
         <label for="signup-password">Password</label>
         <input type="password" class="form-control" id="signup-password" name="signup-password" required>
       </div>
+
+      <!-- Honeypot Anti-Spam -->
+      <div style="display:none;">
+        <input type="text" name="robot_test">
+      </div>
+
+      <!-- Timestamp Anti-Bot -->
+      <input type="hidden" name="form_time" value="{{ time.time() }}">
+
       <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
       <div class="form-link">
         <a href="#" id="switch-to-login">Already have an account? Login</a>
