@@ -1,0 +1,7 @@
+Flask
+Flask-MySQLdb
+Flask-Limiter
+bcrypt
+PyMySQL
+gunicorn
+python-dotenv
