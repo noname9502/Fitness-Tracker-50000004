@@ -1,23 +1,43 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from flask_mysqldb import MySQL
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import bcrypt
+import re
+import time
+import os
+from dotenv import load_dotenv
+
+# Load .env variables
+load_dotenv()
 
 app = Flask(__name__)
 
 # MySQL Configuration
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'root'
-app.config['MYSQL_DB'] = 'user_db'
+app.config['MYSQL_HOST'] = ''
+app.config['MYSQL_USER'] = ''
+app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_DB'] = ''
 
 # Secure session management configurations
-app.config['SECRET_KEY'] = 'f3d2b5e36c1c4d0e8c7eeb9f5db6c1e1a5e9f8d9d2a6e3b1a7c4d3f1e2b2a5c6' # Needed for session management
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY') # Needed for session management
 app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevents access to cookie via JavaScript
 app.config['SESSION_COOKIE_SECURE'] = True    # Cookies are only sent over HTTPS
 app.config['SESSION_PERMANENT'] = False        # Set to True if you want persistent sessions
 app.config['REMEMBER_COOKIE_SECURE'] = True    # Secure remember me cookies
 
 mysql = MySQL(app)
+
+
+# DOS Limit
+# "200 per hour" → each IP can make 200 requests per hour.
+# "50 per minute" → each IP can make 50 requests per minute.
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=["200 per hour", "50 per minute"]
+)
+
+limiter.init_app(app)
 
 
 @app.after_request
@@ -32,7 +52,13 @@ def apply_security_headers(response):
     response.headers["Referrer-Policy"] = "no-referrer"
     
     # Sets a Content Security Policy to restrict resource loading to the same origin.
-    response.headers["X-Content-Security-Policy"] = "default-src 'self'"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' https:; "
+        "style-src 'self' 'unsafe-inline' https:; "
+        "img-src 'self' data: https:; "
+        "font-src 'self' https: data:;"
+    )
     
     # XSS protection
     response.headers["X-XSS-Protection"] = "1; mode=block"  
@@ -46,62 +72,139 @@ def apply_security_headers(response):
 def home():
     return render_template('main.html')
 
+
+# SIGNUP ROUTE (Rate limited)
+# This route allows only 5 signup requests per minute per IP.
+# It protects against spam accounts and brute-force attacks.
 @app.route('/signup', methods=['POST'])
+@limiter.limit("5 per minute")
 def signup():
+    # Honeypot Anti-Spam
+    honeypot = request.form.get('robot_test')
+    if honeypot and honeypot.strip() != "":
+        flash("Spam detected!", "danger")
+        return redirect(url_for('login_page'))
+
+    # Timestamp Anti-Bot (bots submit instantly)
+    try:
+        form_time = float(request.form.get("form_time", "0"))
+    except:
+        form_time = 0
+
+    if time.time() - form_time < 2:  # less than 2 sec = bot
+        flash("Bot behavior detected!", "danger")
+        return redirect(url_for('login_page'))
+
+    # Validate email
     email = request.form['signup-email']
     password = request.form['signup-password']
+
+    email_pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+    if not re.match(email_pattern, email):
+        flash("Invalid email format!", "danger")
+        return redirect(url_for('login_page'))
+
+    # Strong password validation
+    password_pattern = r"^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+    if not re.match(password_pattern, password):
+        flash("Password must be at least 8 characters, include 1 uppercase, 1 number, and 1 special character!", "danger")
+        return redirect(url_for('login_page'))
+
+    # Hash password
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
+    # Save to database
     cur = mysql.connection.cursor()
     try:
-        cur.execute("INSERT INTO users (email, password) VALUES (%s, %s)", (email, hashed_password))
+        cur.execute(
+            "INSERT INTO users (email, password) VALUES (%s, %s)",
+            (email, hashed_password)
+        )
         mysql.connection.commit()
         flash('User created successfully!', 'success')
-    except Exception as e:
+
+    except Exception:
         mysql.connection.rollback()
         flash('Email already exists or an error occurred!', 'danger')
+
     finally:
         cur.close()
+
     return redirect(url_for('login_page'))
+
 
 @app.route('/login')
 def login_page():
-    return render_template('login_signup.html')
+    return render_template('login_signup.html', time=time)
 
 
+
+# LOGIN ROUTE (Rate limited)
+# Allows only 5 login attempts per minute per IP.
+# Prevents brute-force attacks and password guessing.
 @app.route('/login', methods=['POST'])
+@limiter.limit("5 per minute")
 def login():
     email = request.form['login-email']
     password = request.form['login-password']
+
+  
+    # 1. BASIC SECURITY: Validate email format
+    import re
+    email_pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+    if not re.match(email_pattern, email):
+        flash("Invalid email format!", "danger")
+        return redirect(url_for('login_page'))
+
+
+    # 2. SECURE ADMIN LOGIN
+    admin_email = os.getenv("ADMIN_EMAIL")
     
-    # Predefined admin credentials
-    admin_email = "admin@gmail.com"
-    admin_password = "admin"  # Replace with your actual admin password
+    # Replace with your generated bcrypt admin hash
+    admin_password_hash = os.getenv("ADMIN_PASSWORD_HASH").encode() 
+    # ↑ Example hash — generate your own
 
-    if email == admin_email and password == admin_password:
-        return redirect(url_for('admin'))  # Redirect to admin dashboard
+    # Check admin login after validating email
+    if email == admin_email and bcrypt.checkpw(password.encode('utf-8'), admin_password_hash):
+        return redirect(url_for('admin'))  # Admin dashboard
 
+ 
+    # 3. CHECK USER IN DATABASE
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM users WHERE email=%s", (email,))
     user = cur.fetchone()
     cur.close()
 
+
+    # 4. If user email exists
     if user:
-        hashed_password = user[2]  # Assuming user[2] is the hashed password
-        if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):  # Ensure hashed_password is encoded
-            return redirect(url_for('index'))  # Redirect to user dashboard
+        stored_hash = user[2]  # Stored hashed password from DB
+
+        # Verify password with bcrypt
+        if bcrypt.checkpw(password.encode('utf-8'), stored_hash.encode('utf-8')):
+            # LOGIN SUCCESS (you can add session here later)
+            return redirect(url_for('index'))  # User dashboard
         else:
             flash('Invalid email or password!', 'danger')
             return redirect(url_for('login_page'))
-    else:
-        flash('Invalid email or password!', 'danger')
-        return redirect(url_for('login_page'))
+
+    # 5. EMAIL DOES NOT EXIST
+    flash('Invalid email or password!', 'danger')
+    return redirect(url_for('login_page'))
+
+
         
 @app.route('/index')
 def index():
     return render_template('index.html')
 
+
+# ACTIVITY LOGGING ROUTE (Rate limited)
+
+# Allows up to 20 activity log requests per minute per IP.
+# Prevents attackers from spamming your database.
 @app.route('/log_activity', methods=['POST'])
+@limiter.limit("20 per minute")
 def log_activity():
     data = request.get_json()
     activityType = data['activityType']
@@ -110,10 +213,13 @@ def log_activity():
     date = data['date']
     
     cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO activities (activityType, duration, calories, date) VALUES (%s, %s, %s, %s)",
-                (activityType, duration, calories, date))
+    cur.execute(
+        "INSERT INTO activities (activityType, duration, calories, date) VALUES (%s, %s, %s, %s)",
+        (activityType, duration, calories, date)
+    )
     mysql.connection.commit()
     cur.close()
+
     return jsonify(message='Activity logged successfully!')
 
 @app.route('/get_log_history', methods=['GET'])
