@@ -145,14 +145,14 @@ def login_page():
 # Allows only 5 login attempts per minute per IP.
 # Prevents brute-force attacks and password guessing.
 @app.route('/login', methods=['POST'])
-@limiter.limit("5 per minute")
+@limiter.limit("5 per minute")  # Rate limit to prevent brute-force attacks
 def login():
+    # Get form data
     email = request.form['login-email']
     password = request.form['login-password']
 
-  
+
     # 1. BASIC SECURITY: Validate email format
-    import re
     email_pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
     if not re.match(email_pattern, email):
         flash("Invalid email format!", "danger")
@@ -161,34 +161,35 @@ def login():
 
     # 2. SECURE ADMIN LOGIN
     admin_email = os.getenv("ADMIN_EMAIL")
-    
-    # Replace with your generated bcrypt admin hash
-    admin_password_hash = os.getenv("ADMIN_PASSWORD_HASH").encode() 
-    # ↑ Example hash — generate your own
+    admin_password_hash = os.getenv("ADMIN_PASSWORD_HASH").encode()  # bcrypt hash from .env
 
-    # Check admin login after validating email
+    # Check if the login is for admin
     if email == admin_email and bcrypt.checkpw(password.encode('utf-8'), admin_password_hash):
-        return redirect(url_for('admin'))  # Admin dashboard
+        session['admin_logged_in'] = True  # << Set admin session
+        flash("Admin logged in successfully!", "success")
+        return redirect(url_for('admin'))  # Redirect to admin dashboard
 
- 
     # 3. CHECK USER IN DATABASE
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM users WHERE email=%s", (email,))
     user = cur.fetchone()
     cur.close()
 
-
-    # 4. If user email exists
+ 
+    # 4. IF USER EMAIL EXISTS
     if user:
         stored_hash = user[2]  # Stored hashed password from DB
 
-        # Verify password with bcrypt
+        # Verify password using bcrypt
         if bcrypt.checkpw(password.encode('utf-8'), stored_hash.encode('utf-8')):
-            # LOGIN SUCCESS (you can add session here later)
-            return redirect(url_for('index'))  # User dashboard
+            # LOGIN SUCCESS: set user session
+            session['user_id'] = user[0]  # Track logged-in user by ID
+            flash("Logged in successfully!", "success")
+            return redirect(url_for('index'))  # Redirect to user dashboard
         else:
             flash('Invalid email or password!', 'danger')
             return redirect(url_for('login_page'))
+
 
     # 5. EMAIL DOES NOT EXIST
     flash('Invalid email or password!', 'danger')
@@ -271,7 +272,12 @@ def delete_user(user_id):
 
 @app.route('/admin')
 def admin():
+    # Check if admin is logged in
+    if not session.get('admin_logged_in'):
+        flash("You must be logged in as admin!", "danger")
+        return redirect(url_for('login_page'))  # Redirect to login page
     return render_template('admin.html')
+
 
 @app.route('/update_user/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
