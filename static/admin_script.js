@@ -165,3 +165,39 @@ header.appendChild(logoutBtn);
 
     // Add event listener to logout button
 
+document.addEventListener('DOMContentLoaded', () => {
+    fetchUsers();
+    fetchActivities();
+    fetchStats();   
+});
+
+
+
+async function loadStats() {
+    const statsBox = document.getElementById("stats-box");
+
+    try {
+        const response = await fetch("/stats");
+
+        if (!response.ok) {
+            throw new Error("Server error");
+        }
+
+        const data = await response.json();
+
+        statsBox.innerHTML = `
+            <p><strong>Total Users:</strong> ${data.total_users}</p>
+            <p><strong>Total Activities:</strong> ${data.total_activities}</p>
+            <p><strong>Total Calories Burned:</strong> ${data.total_calories}</p>
+            <p><strong>Most Common Activity:</strong> ${data.most_common_activity}</p>
+        `;
+    } catch (error) {
+        statsBox.innerHTML = `<p class="text-danger">⚠️ Error loading statistics</p>`;
+        console.error("Stats load error:", error);
+    }
+}
+
+window.onload = loadStats;
+
+
+
