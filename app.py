@@ -96,10 +96,11 @@ def signup():
         return redirect(url_for('login_page'))
 
     # Validate email
-    email = request.form['signup-email']
-    password = request.form['signup-password']
+    email = request.form.get("email")
+    password = request.form.get("signup-password")
 
-    email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+
+    email_pattern = r"^[A-Za-z0-9_-]+@[A-Za-z0-9-]+\.[A-Za-z]{2,4}$"
     if not re.match(email_pattern, email):
         flash("Invalid email format!", "danger")
         return redirect(url_for('login_page'))
@@ -147,19 +148,18 @@ def login_page():
 @app.route('/login', methods=['POST'])
 @limiter.limit("5 per minute")  # Rate limit to prevent brute-force attacks
 def login():
-    # Get form data
-    email = request.form['login-email']
-    password = request.form['login-password']
+     
+    # Validate email 
+    email = request.form.get("email")
+    password = request.form.get("login-password") 
 
-
-    # 1. BASIC SECURITY: Validate email format
-    email_pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+    email_pattern = r"^[A-Za-z0-9_-]+@[A-Za-z0-9-]+\.[A-Za-z]{2,4}$"
     if not re.match(email_pattern, email):
         flash("Invalid email format!", "danger")
         return redirect(url_for('login_page'))
 
 
-    # 2. SECURE ADMIN LOGIN
+    # SECURE ADMIN LOGIN
     admin_email = os.getenv("ADMIN_EMAIL")
     admin_password_hash = os.getenv("ADMIN_PASSWORD_HASH").encode()  # bcrypt hash from .env
 
@@ -169,14 +169,14 @@ def login():
         flash("Admin logged in successfully!", "success")
         return redirect(url_for('admin'))  # Redirect to admin dashboard
 
-    # 3. CHECK USER IN DATABASE
+    # CHECK USER IN DATABASE
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM users WHERE email=%s", (email,))
     user = cur.fetchone()
     cur.close()
 
  
-    # 4. IF USER EMAIL EXISTS
+    # IF USER EMAIL EXISTS
     if user:
         stored_hash = user[2]  # Stored hashed password from DB
 
@@ -191,7 +191,7 @@ def login():
             return redirect(url_for('login_page'))
 
 
-    # 5. EMAIL DOES NOT EXIST
+    # EMAIL DOES NOT EXIST
     flash('Invalid email or password!', 'danger')
     return redirect(url_for('login_page'))
 
