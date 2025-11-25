@@ -283,12 +283,23 @@ def delete_activity(activity_id):
 
 @app.route('/get_users', methods=['GET'])
 def get_users():
+    # Only admin can access user list
+    if not session.get('admin_logged_in'):
+        return jsonify({"error": "Unauthorized"}), 401
+
     cur = mysql.connection.cursor()
-    cur.execute("SELECT id, email, password FROM users")
+    cur.execute("SELECT id, email FROM users")  # 1) Do NOT return passwords # 2) static query → safe
     users = cur.fetchall()
     cur.close()
 
-    return jsonify([{'id': user[0], 'email': user[1], 'password': user[2]} for user in users])
+    return jsonify([
+        {
+            'id': user[0],
+            'email': user[1]
+        }
+        for user in users
+    ])
+
 
 @app.route('/get_activities', methods=['GET'])
 def get_activities():
@@ -441,3 +452,4 @@ if __name__ == '__main__':
         debug=True, 
         ssl_context=("certificate.crt", "certificate.key")
     )
+
