@@ -303,6 +303,11 @@ def get_users():
 
 @app.route('/get_activities', methods=['GET'])
 def get_activities():
+    # Check if user is logged in
+    if 'user_id' not in session:
+        return jsonify({"error": "Unauthorized. Please log in first."}), 401
+
+    user_id = session['user_id']
     cur = mysql.connection.cursor()
 
     query = """
@@ -315,12 +320,16 @@ def get_activities():
             activities.date
         FROM activities
         LEFT JOIN users ON activities.user_id = users.id
+        WHERE activities.user_id = %s
         ORDER BY activities.id DESC
     """
 
-    cur.execute(query)
+    cur.execute(query, (user_id,))
     activities = cur.fetchall()
     cur.close()
+
+    return jsonify(activities)
+
 
     return jsonify([
         {
